@@ -38,8 +38,7 @@ const server = http.createServer(function(request: any, response: any){
 
 ## Creating a Websocket layer
 
-```
-//This
+```typescript
 
 import WebSocket, {WebSocketServer} from 'ws';
 
@@ -74,7 +73,7 @@ server.listen(8000, function(){
 
 ## Code Explanation
 
-```
+```typescript
 const wss = new WebSocketServer({ server });
 ```
 
@@ -83,7 +82,7 @@ const wss = new WebSocketServer({ server });
 
 ### Handling Websockets Connection
 
-```
+```typescript
 wss.on('connection', function connection(socket){
 ```
 
@@ -91,7 +90,7 @@ wss.on('connection', function connection(socket){
 - When a client connects, a `socket` is created for that client.
 
 ### Handling errors
-```
+```typescript
     socket.on('error', console.error);
 ```
 
@@ -99,7 +98,7 @@ wss.on('connection', function connection(socket){
 
 
 ### Handling incoming messages
-```
+```typescript
     socket.on('message', function message(data, isBinary){
         wss.clients.forEach(function each(client){
             if(client.readyState === WebSocket.OPEN){
@@ -116,7 +115,7 @@ wss.on('connection', function connection(socket){
 - The message is sent to all connected clients whose WebSocket connection is open (`WebSocket.OPEN`).
 
 ### Sending an initial message to the client
-```
+```typescript
     socket.send('Hello! Message from Server!');
 ```
 
@@ -124,7 +123,7 @@ wss.on('connection', function connection(socket){
   "Hello! Message from Server!".
 
 ### Starting the server
-```
+```typescript
 server.listen(8000, function(){
     console.log((new Date() + 'server running on port 8000'));
 });
