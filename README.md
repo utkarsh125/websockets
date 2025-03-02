@@ -23,7 +23,8 @@ WebSockets solve several problems related to real-time communication and efficie
 `http`: The built-in Node.js HTTP module to create a basic web server.
 
 ### Creating a web server using `http` 
-```
+
+```javascript
 const server = http.createServer(function(request: any, response: any){
     console.log((new Date()) + ' Received request for ' + request.url);
     response.end("Hi there");
@@ -35,7 +36,44 @@ const server = http.createServer(function(request: any, response: any){
 - When an HTTP request is received, it logs the request and sends a response "Hi there" to the client.
 - Note: This HTTP server is mainly used to attach the WebSocket server.
 
-### Creating a Websocket layer
+## Creating a Websocket layer
+
+```
+//This
+
+import WebSocket, {WebSocketServer} from 'ws';
+
+import http from 'http';
+
+const server = http.createServer(function(request: any, response: any){
+    console.log((new Date()) + ' Received request for ' + request.url);
+    response.end("Hi there")
+})
+
+const wss = new WebSocketServer({ server });
+let userCount = 0;
+wss.on('connection', function connection(socket){
+
+    socket.on('error', (err) => console.error(err));
+
+    socket.on('message', function message(data, isBinary){
+        wss.clients.forEach(function each(client){
+            if(client.readyState === WebSocket.OPEN){
+                client.send(data, {binary: isBinary});
+            }
+        })
+    })
+    console.log("user connected: ", ++userCount);
+    socket.send('Hello! Message from Server!');
+});
+
+server.listen(8000, function(){
+    console.log((new Date() + 'server running on port 8000'));
+})
+```
+
+## Code Explanation
+
 ```
 const wss = new WebSocketServer({ server });
 ```
@@ -44,9 +82,11 @@ const wss = new WebSocketServer({ server });
 - Now, the server can handle both HTTP and WebSocket connections on the same port (8000).
 
 ### Handling Websockets Connection
+
 ```
 wss.on('connection', function connection(socket){
 ```
+
 - The WebSocket server listens for new client connections.
 - When a client connects, a `socket` is created for that client.
 
@@ -94,3 +134,17 @@ server.listen(8000, function(){
 
 **Keep in mind that all of this can be replicated using `expressjs` and it is recommended that you deal with `http` that way**
 **The `core/http` was used just for learning purpose.**
+
+
+## Testing the application
+1. Open `hopscotch` in web browser
+2. Navigate to /realtime/websocket
+3. Connect to `ws://localhost:8000`
+4. Maintain a user count, connect 2 users from 2 separate tabs
+
+<p align='center'>
+    <img src="/images/tab.png"/>
+</p>
+
+5. Sending a message from user1, it will send that message to all users that are connected to that server
+6. Broadcasting kind of
